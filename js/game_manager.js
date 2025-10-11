@@ -6,10 +6,12 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 
   this.startTiles     = 2;
   this.setupMode      = false;
+  this.stateHistory   = []; // Store game states for undo
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
+  this.inputManager.on("undo", this.undo.bind(this));
   this.inputManager.on("enterSetup", this.enterSetupMode.bind(this));
   this.inputManager.on("exitSetup", this.exitSetupMode.bind(this));
   this.inputManager.on("clearBoard", this.clearBoard.bind(this));
@@ -22,6 +24,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
 GameManager.prototype.restart = function () {
   this.storageManager.clearGameState();
   this.actuator.continueGame(); // Clear the game won/lost message
+  this.stateHistory = []; // Clear history on restart
   this.setup();
 };
 
@@ -131,6 +134,22 @@ GameManager.prototype.moveTile = function (tile, cell) {
   tile.updatePosition(cell);
 };
 
+// Save current state to history
+GameManager.prototype.saveState = function () {
+  this.stateHistory.push({
+    grid: this.grid.serialize(),
+    score: this.score,
+    over: this.over,
+    won: this.won,
+    keepPlaying: this.keepPlaying
+  });
+
+  // Keep only last 10 states to avoid memory issues
+  if (this.stateHistory.length > 10) {
+    this.stateHistory.shift();
+  }
+};
+
 // Move tiles on the grid in the specified direction
 GameManager.prototype.move = function (direction) {
   // 0: up, 1: right, 2: down, 3: left
@@ -144,6 +163,9 @@ GameManager.prototype.move = function (direction) {
   var vector     = this.getVector(direction);
   var traversals = this.buildTraversals(vector);
   var moved      = false;
+
+  // Save state before move for undo
+  this.saveState();
 
   // Save the current tile positions and remove merger information
   this.prepareTiles();
@@ -193,6 +215,9 @@ GameManager.prototype.move = function (direction) {
     }
 
     this.actuate();
+  } else {
+    // Move didn't happen, remove the saved state
+    this.stateHistory.pop();
   }
 };
 
@@ -290,7 +315,26 @@ GameManager.prototype.exitSetupMode = function () {
   this.won = false;
   this.keepPlaying = false;
   this.score = 0;
+  this.stateHistory = []; // Clear history when starting from setup
   this.actuator.exitSetupMode();
+  this.actuate();
+};
+
+// Undo the last move
+GameManager.prototype.undo = function () {
+  if (this.setupMode) return; // Don't allow undo in setup mode
+  if (this.stateHistory.length === 0) return; // No history to undo
+
+  // Get the previous state
+  var previousState = this.stateHistory.pop();
+
+  // Restore the state
+  this.grid = new Grid(previousState.grid.size, previousState.grid.cells);
+  this.score = previousState.score;
+  this.over = previousState.over;
+  this.won = previousState.won;
+  this.keepPlaying = previousState.keepPlaying;
+
   this.actuate();
 };
 

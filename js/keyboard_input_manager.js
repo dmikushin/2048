@@ -67,12 +67,19 @@ KeyboardInputManager.prototype.listen = function () {
     if (!modifiers && event.which === 82) {
       self.restart.call(self, event);
     }
+
+    // Z key or Ctrl+Z for undo
+    if ((event.which === 90 && event.ctrlKey) || (event.which === 90 && !modifiers)) {
+      event.preventDefault();
+      self.emit("undo");
+    }
   });
 
   // Respond to button presses
   this.bindButtonPress(".retry-button", this.restart);
   this.bindButtonPress(".restart-button", this.restart);
   this.bindButtonPress(".keep-playing-button", this.keepPlaying);
+  this.bindButtonPress(".undo-button", this.undo);
   this.bindButtonPress(".setup-button", this.toggleSetup);
   this.bindButtonPress(".start-game-button", this.startGame);
   this.bindButtonPress(".clear-board-button", this.clearBoard);
@@ -142,6 +149,11 @@ KeyboardInputManager.prototype.restart = function (event) {
 KeyboardInputManager.prototype.keepPlaying = function (event) {
   event.preventDefault();
   this.emit("keepPlaying");
+};
+
+KeyboardInputManager.prototype.undo = function (event) {
+  event.preventDefault();
+  this.emit("undo");
 };
 
 KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {

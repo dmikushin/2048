@@ -517,7 +517,7 @@ hr {
   line-height: 42px;
   margin-bottom: 0; }
 
-.restart-button {
+.restart-button, .undo-button {
   display: inline-block;
   background: #8f7a66;
   border-radius: 3px;
@@ -528,7 +528,11 @@ hr {
   line-height: 42px;
   display: block;
   text-align: center;
-  float: right; }
+  float: right;
+  margin-left: 10px; }
+
+.undo-button {
+  background: #b8a195; }
 
 .game-explanation {
   margin-top: 50px; }
