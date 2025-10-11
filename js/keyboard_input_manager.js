@@ -1,7 +1,6 @@
 function KeyboardInputManager() {
   this.events = {};
   this.setupMode = false;
-  this.selectedValue = 2;
 
   if (window.navigator.msPointerEnabled) {
     //Internet Explorer 10 style
@@ -77,9 +76,6 @@ KeyboardInputManager.prototype.listen = function () {
   this.bindButtonPress(".setup-button", this.toggleSetup);
   this.bindButtonPress(".start-game-button", this.startGame);
   this.bindButtonPress(".clear-board-button", this.clearBoard);
-
-  // Bind tile value selector buttons
-  this.bindTileValueButtons();
 
   // Bind grid cell clicks for setup mode
   this.bindGridCellClicks();
@@ -182,50 +178,31 @@ KeyboardInputManager.prototype.clearBoard = function (event) {
   this.emit("clearBoard");
 };
 
-KeyboardInputManager.prototype.bindTileValueButtons = function () {
-  var self = this;
-  var buttons = document.querySelectorAll(".tile-value-button");
-
-  buttons.forEach(function (button) {
-    button.addEventListener("click", function (event) {
-      event.preventDefault();
-      var value = parseInt(this.getAttribute("data-value"));
-      self.selectedValue = value;
-
-      // Update visual selection
-      buttons.forEach(function (btn) {
-        btn.classList.remove("selected");
-      });
-      this.classList.add("selected");
-    });
-  });
-
-  // Select first button by default
-  if (buttons.length > 0) {
-    buttons[0].classList.add("selected");
-  }
-};
-
 KeyboardInputManager.prototype.bindGridCellClicks = function () {
   var self = this;
-  var gridContainer = document.querySelector(".grid-container");
+  var gameContainer = document.querySelector(".game-container");
 
-  gridContainer.addEventListener("click", function (event) {
+  gameContainer.addEventListener("click", function (event) {
     if (!self.setupMode) return;
 
-    // Find which cell was clicked
+    // Find the grid-container within game-container
+    var gridContainer = document.querySelector(".grid-container");
     var rect = gridContainer.getBoundingClientRect();
+
+    // Calculate position relative to grid
     var x = event.clientX - rect.left;
     var y = event.clientY - rect.top;
+
+    // Check if click is within grid bounds
+    if (x < 0 || y < 0 || x > rect.width || y > rect.height) return;
 
     var cellSize = rect.width / 4;
     var col = Math.floor(x / cellSize);
     var row = Math.floor(y / cellSize);
 
     if (col >= 0 && col < 4 && row >= 0 && row < 4) {
-      self.emit("setTile", {
-        position: { x: col, y: row },
-        value: self.selectedValue
+      self.emit("cycleTile", {
+        position: { x: col, y: row }
       });
     }
   });

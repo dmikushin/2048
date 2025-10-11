@@ -13,7 +13,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("enterSetup", this.enterSetupMode.bind(this));
   this.inputManager.on("exitSetup", this.exitSetupMode.bind(this));
   this.inputManager.on("clearBoard", this.clearBoard.bind(this));
-  this.inputManager.on("setTile", this.setTile.bind(this));
+  this.inputManager.on("cycleTile", this.cycleTile.bind(this));
 
   this.setup();
 }
@@ -301,23 +301,29 @@ GameManager.prototype.clearBoard = function () {
   this.actuate();
 };
 
-// Set a tile at specific position
-GameManager.prototype.setTile = function (data) {
+// Cycle tile value at position: empty -> 2 -> 4 -> 8 -> ... -> 32768 -> empty
+GameManager.prototype.cycleTile = function (data) {
   if (!this.setupMode) return;
 
   var position = data.position;
-  var value = data.value;
+  var currentTile = this.grid.cells[position.x][position.y];
+  var newValue;
 
-  // Remove existing tile at this position
-  if (this.grid.cells[position.x][position.y]) {
-    this.grid.removeTile(this.grid.cells[position.x][position.y]);
+  if (!currentTile) {
+    // Empty cell -> create 2
+    newValue = 2;
+  } else if (currentTile.value >= 32768) {
+    // 32768 -> empty
+    this.grid.removeTile(currentTile);
+    this.actuate();
+    return;
+  } else {
+    // Double the value
+    newValue = currentTile.value * 2;
+    this.grid.removeTile(currentTile);
   }
 
-  // Add new tile if value > 0
-  if (value > 0) {
-    var tile = new Tile(position, value);
-    this.grid.insertTile(tile);
-  }
-
+  var tile = new Tile(position, newValue);
+  this.grid.insertTile(tile);
   this.actuate();
 };
