@@ -8,6 +8,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.setupMode      = false;
   this.stateHistory   = []; // Store game states for undo
   this.setupState     = null; // Store initial setup for reset
+  this.maxTile        = 0; // Track highest tile achieved
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
@@ -28,6 +29,7 @@ GameManager.prototype.restart = function () {
   this.actuator.continueGame(); // Clear the game won/lost message
   this.stateHistory = []; // Clear history on restart
   this.setupState = null; // Clear saved setup
+  this.maxTile = 0; // Reset max tile tracker
   this.actuator.hideResetSetupButton();
   this.setup();
 };
@@ -145,7 +147,8 @@ GameManager.prototype.saveState = function () {
     score: this.score,
     over: this.over,
     won: this.won,
-    keepPlaying: this.keepPlaying
+    keepPlaying: this.keepPlaying,
+    maxTile: this.maxTile
   });
 
   // Keep only last 10 states to avoid memory issues
@@ -198,8 +201,11 @@ GameManager.prototype.move = function (direction) {
           // Update the score
           self.score += merged.value;
 
-          // The mighty 2048 tile
-          if (merged.value === 2048) self.won = true;
+          // Check for new highest tile (2048, 4096, 8192, etc.)
+          if (merged.value >= 2048 && merged.value > self.maxTile) {
+            self.maxTile = merged.value;
+            self.won = true;
+          }
         } else {
           self.moveTile(tile, positions.farthest);
         }
@@ -321,9 +327,19 @@ GameManager.prototype.exitSetupMode = function () {
   this.score = 0;
   this.stateHistory = []; // Clear history when starting from setup
 
+  // Calculate maxTile from setup grid
+  var maxTileInSetup = 0;
+  this.grid.eachCell(function (x, y, tile) {
+    if (tile && tile.value > maxTileInSetup) {
+      maxTileInSetup = tile.value;
+    }
+  });
+  this.maxTile = maxTileInSetup;
+
   // Save the setup state for reset
   this.setupState = {
-    grid: this.grid.serialize()
+    grid: this.grid.serialize(),
+    maxTile: this.maxTile
   };
 
   this.actuator.exitSetupMode();
@@ -345,6 +361,7 @@ GameManager.prototype.undo = function () {
   this.over = previousState.over;
   this.won = previousState.won;
   this.keepPlaying = previousState.keepPlaying;
+  this.maxTile = previousState.maxTile;
 
   // Clear game over message if we're undoing from game over state
   if (!this.over) {
@@ -365,6 +382,7 @@ GameManager.prototype.resetToSetup = function () {
   this.over = false;
   this.won = false;
   this.keepPlaying = false;
+  this.maxTile = this.setupState.maxTile; // Restore max tile from setup
   this.stateHistory = []; // Clear history
 
   this.actuate();
