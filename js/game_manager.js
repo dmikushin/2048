@@ -346,6 +346,11 @@ GameManager.prototype.undo = function () {
   this.won = previousState.won;
   this.keepPlaying = previousState.keepPlaying;
 
+  // Clear game over message if we're undoing from game over state
+  if (!this.over) {
+    this.actuator.continueGame();
+  }
+
   this.actuate();
 };
 
