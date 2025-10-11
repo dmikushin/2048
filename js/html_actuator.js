@@ -147,3 +147,17 @@ HTMLActuator.prototype.exitSetupMode = function () {
   var gameContainer = document.querySelector(".game-container");
   gameContainer.classList.remove("setup-mode");
 };
+
+HTMLActuator.prototype.showResetSetupButton = function () {
+  var button = document.querySelector(".reset-setup-button");
+  if (button) {
+    button.style.display = "block";
+  }
+};
+
+HTMLActuator.prototype.hideResetSetupButton = function () {
+  var button = document.querySelector(".reset-setup-button");
+  if (button) {
+    button.style.display = "none";
+  }
+};

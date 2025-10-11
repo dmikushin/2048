@@ -7,6 +7,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.startTiles     = 2;
   this.setupMode      = false;
   this.stateHistory   = []; // Store game states for undo
+  this.setupState     = null; // Store initial setup for reset
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
@@ -14,6 +15,7 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.inputManager.on("undo", this.undo.bind(this));
   this.inputManager.on("enterSetup", this.enterSetupMode.bind(this));
   this.inputManager.on("exitSetup", this.exitSetupMode.bind(this));
+  this.inputManager.on("resetSetup", this.resetToSetup.bind(this));
   this.inputManager.on("clearBoard", this.clearBoard.bind(this));
   this.inputManager.on("cycleTile", this.cycleTile.bind(this));
 
@@ -25,6 +27,8 @@ GameManager.prototype.restart = function () {
   this.storageManager.clearGameState();
   this.actuator.continueGame(); // Clear the game won/lost message
   this.stateHistory = []; // Clear history on restart
+  this.setupState = null; // Clear saved setup
+  this.actuator.hideResetSetupButton();
   this.setup();
 };
 
@@ -316,7 +320,14 @@ GameManager.prototype.exitSetupMode = function () {
   this.keepPlaying = false;
   this.score = 0;
   this.stateHistory = []; // Clear history when starting from setup
+
+  // Save the setup state for reset
+  this.setupState = {
+    grid: this.grid.serialize()
+  };
+
   this.actuator.exitSetupMode();
+  this.actuator.showResetSetupButton();
   this.actuate();
 };
 
@@ -334,6 +345,22 @@ GameManager.prototype.undo = function () {
   this.over = previousState.over;
   this.won = previousState.won;
   this.keepPlaying = previousState.keepPlaying;
+
+  this.actuate();
+};
+
+// Reset to the saved setup position
+GameManager.prototype.resetToSetup = function () {
+  if (this.setupMode) return; // Don't allow in setup mode
+  if (!this.setupState) return; // No setup state saved
+
+  // Restore to setup state
+  this.grid = new Grid(this.setupState.grid.size, this.setupState.grid.cells);
+  this.score = 0;
+  this.over = false;
+  this.won = false;
+  this.keepPlaying = false;
+  this.stateHistory = []; // Clear history
 
   this.actuate();
 };

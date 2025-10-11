@@ -80,6 +80,7 @@ KeyboardInputManager.prototype.listen = function () {
   this.bindButtonPress(".restart-button", this.restart);
   this.bindButtonPress(".keep-playing-button", this.keepPlaying);
   this.bindButtonPress(".undo-button", this.undo);
+  this.bindButtonPress(".reset-setup-button", this.resetSetup);
   this.bindButtonPress(".setup-button", this.toggleSetup);
   this.bindButtonPress(".start-game-button", this.startGame);
   this.bindButtonPress(".clear-board-button", this.clearBoard);
@@ -154,6 +155,11 @@ KeyboardInputManager.prototype.keepPlaying = function (event) {
 KeyboardInputManager.prototype.undo = function (event) {
   event.preventDefault();
   this.emit("undo");
+};
+
+KeyboardInputManager.prototype.resetSetup = function (event) {
+  event.preventDefault();
+  this.emit("resetSetup");
 };
 
 KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
