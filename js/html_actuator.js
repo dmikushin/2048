@@ -137,3 +137,13 @@ HTMLActuator.prototype.clearMessage = function () {
   this.messageContainer.classList.remove("game-won");
   this.messageContainer.classList.remove("game-over");
 };
+
+HTMLActuator.prototype.enterSetupMode = function () {
+  var gameContainer = document.querySelector(".game-container");
+  gameContainer.classList.add("setup-mode");
+};
+
+HTMLActuator.prototype.exitSetupMode = function () {
+  var gameContainer = document.querySelector(".game-container");
+  gameContainer.classList.remove("setup-mode");
+};

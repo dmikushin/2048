@@ -5,10 +5,15 @@ function GameManager(size, InputManager, Actuator, StorageManager) {
   this.actuator       = new Actuator;
 
   this.startTiles     = 2;
+  this.setupMode      = false;
 
   this.inputManager.on("move", this.move.bind(this));
   this.inputManager.on("restart", this.restart.bind(this));
   this.inputManager.on("keepPlaying", this.keepPlaying.bind(this));
+  this.inputManager.on("enterSetup", this.enterSetupMode.bind(this));
+  this.inputManager.on("exitSetup", this.exitSetupMode.bind(this));
+  this.inputManager.on("clearBoard", this.clearBoard.bind(this));
+  this.inputManager.on("setTile", this.setTile.bind(this));
 
   this.setup();
 }
@@ -131,6 +136,7 @@ GameManager.prototype.move = function (direction) {
   // 0: up, 1: right, 2: down, 3: left
   var self = this;
 
+  if (this.setupMode) return; // Don't allow moves in setup mode
   if (this.isGameTerminated()) return; // Don't do anything if the game's over
 
   var cell, tile;
@@ -269,4 +275,49 @@ GameManager.prototype.tileMatchesAvailable = function () {
 
 GameManager.prototype.positionsEqual = function (first, second) {
   return first.x === second.x && first.y === second.y;
+};
+
+// Enter setup mode
+GameManager.prototype.enterSetupMode = function () {
+  this.setupMode = true;
+  this.actuator.enterSetupMode();
+};
+
+// Exit setup mode and start game
+GameManager.prototype.exitSetupMode = function () {
+  this.setupMode = false;
+  this.over = false;
+  this.won = false;
+  this.keepPlaying = false;
+  this.score = 0;
+  this.actuator.exitSetupMode();
+  this.actuate();
+};
+
+// Clear all tiles from board
+GameManager.prototype.clearBoard = function () {
+  if (!this.setupMode) return;
+  this.grid = new Grid(this.size);
+  this.actuate();
+};
+
+// Set a tile at specific position
+GameManager.prototype.setTile = function (data) {
+  if (!this.setupMode) return;
+
+  var position = data.position;
+  var value = data.value;
+
+  // Remove existing tile at this position
+  if (this.grid.cells[position.x][position.y]) {
+    this.grid.removeTile(this.grid.cells[position.x][position.y]);
+  }
+
+  // Add new tile if value > 0
+  if (value > 0) {
+    var tile = new Tile(position, value);
+    this.grid.insertTile(tile);
+  }
+
+  this.actuate();
 };

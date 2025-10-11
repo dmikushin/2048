@@ -756,3 +756,129 @@ hr {
     margin-top: 90px !important; }
   .game-message .lower {
     margin-top: 30px !important; } }
+
+/* Setup Mode Styles */
+.setup-controls {
+  margin: 20px auto;
+  max-width: 500px;
+  text-align: center;
+  background: #eee4da;
+  padding: 15px;
+  border-radius: 6px;
+}
+
+.setup-header {
+  margin-bottom: 15px;
+}
+
+.setup-header p {
+  margin: 0;
+  font-size: 16px;
+  font-weight: bold;
+  color: #776e65;
+}
+
+.tile-selector {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  justify-content: center;
+  margin-bottom: 15px;
+}
+
+.tile-value-button {
+  display: inline-block;
+  background: #bbada0;
+  border-radius: 3px;
+  padding: 8px 12px;
+  font-size: 14px;
+  font-weight: bold;
+  color: white;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.2s;
+  min-width: 50px;
+  text-align: center;
+}
+
+.tile-value-button:hover {
+  background: #9c8d82;
+}
+
+.tile-value-button.selected {
+  background: #8f7a66;
+  box-shadow: 0 0 0 2px #776e65;
+}
+
+.tile-value-button.erase {
+  background: #dc5a46;
+}
+
+.tile-value-button.erase:hover {
+  background: #c74533;
+}
+
+.setup-actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.clear-board-button,
+.start-game-button {
+  display: inline-block;
+  background: #8f7a66;
+  border-radius: 3px;
+  padding: 10px 20px;
+  color: #f9f6f2;
+  font-size: 14px;
+  font-weight: bold;
+  text-decoration: none;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.clear-board-button:hover,
+.start-game-button:hover {
+  background: #9f8a76;
+}
+
+.start-game-button {
+  background: #6daa4d;
+}
+
+.start-game-button:hover {
+  background: #7dba5d;
+}
+
+.setup-button {
+  display: inline-block;
+  background: #8f7a66;
+  border-radius: 3px;
+  padding: 0 20px;
+  color: #f9f6f2;
+  height: 40px;
+  line-height: 42px;
+  margin-left: 10px;
+  text-decoration: none;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.setup-button:hover {
+  background: #9f8a76;
+}
+
+.game-container.setup-mode {
+  cursor: pointer;
+}
+
+.game-container.setup-mode .grid-cell {
+  border: 2px dashed rgba(0, 0, 0, 0.1);
+  box-sizing: border-box;
+}
+
+.game-container.setup-mode .grid-cell:hover {
+  background: rgba(238, 228, 218, 0.5);
+}

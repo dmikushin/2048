@@ -1,5 +1,7 @@
 function KeyboardInputManager() {
   this.events = {};
+  this.setupMode = false;
+  this.selectedValue = 2;
 
   if (window.navigator.msPointerEnabled) {
     //Internet Explorer 10 style
@@ -72,6 +74,15 @@ KeyboardInputManager.prototype.listen = function () {
   this.bindButtonPress(".retry-button", this.restart);
   this.bindButtonPress(".restart-button", this.restart);
   this.bindButtonPress(".keep-playing-button", this.keepPlaying);
+  this.bindButtonPress(".setup-button", this.toggleSetup);
+  this.bindButtonPress(".start-game-button", this.startGame);
+  this.bindButtonPress(".clear-board-button", this.clearBoard);
+
+  // Bind tile value selector buttons
+  this.bindTileValueButtons();
+
+  // Bind grid cell clicks for setup mode
+  this.bindGridCellClicks();
 
   // Respond to swipe events
   var touchStartClientX, touchStartClientY;
@@ -141,4 +152,81 @@ KeyboardInputManager.prototype.bindButtonPress = function (selector, fn) {
   var button = document.querySelector(selector);
   button.addEventListener("click", fn.bind(this));
   button.addEventListener(this.eventTouchend, fn.bind(this));
+};
+
+KeyboardInputManager.prototype.toggleSetup = function (event) {
+  event.preventDefault();
+  this.setupMode = !this.setupMode;
+
+  if (this.setupMode) {
+    this.emit("enterSetup");
+    document.querySelector(".setup-controls").style.display = "block";
+    document.querySelector(".setup-button").textContent = "Exit Setup";
+  } else {
+    this.emit("exitSetup");
+    document.querySelector(".setup-controls").style.display = "none";
+    document.querySelector(".setup-button").textContent = "Setup Mode";
+  }
+};
+
+KeyboardInputManager.prototype.startGame = function (event) {
+  event.preventDefault();
+  this.setupMode = false;
+  this.emit("exitSetup");
+  document.querySelector(".setup-controls").style.display = "none";
+  document.querySelector(".setup-button").textContent = "Setup Mode";
+};
+
+KeyboardInputManager.prototype.clearBoard = function (event) {
+  event.preventDefault();
+  this.emit("clearBoard");
+};
+
+KeyboardInputManager.prototype.bindTileValueButtons = function () {
+  var self = this;
+  var buttons = document.querySelectorAll(".tile-value-button");
+
+  buttons.forEach(function (button) {
+    button.addEventListener("click", function (event) {
+      event.preventDefault();
+      var value = parseInt(this.getAttribute("data-value"));
+      self.selectedValue = value;
+
+      // Update visual selection
+      buttons.forEach(function (btn) {
+        btn.classList.remove("selected");
+      });
+      this.classList.add("selected");
+    });
+  });
+
+  // Select first button by default
+  if (buttons.length > 0) {
+    buttons[0].classList.add("selected");
+  }
+};
+
+KeyboardInputManager.prototype.bindGridCellClicks = function () {
+  var self = this;
+  var gridContainer = document.querySelector(".grid-container");
+
+  gridContainer.addEventListener("click", function (event) {
+    if (!self.setupMode) return;
+
+    // Find which cell was clicked
+    var rect = gridContainer.getBoundingClientRect();
+    var x = event.clientX - rect.left;
+    var y = event.clientY - rect.top;
+
+    var cellSize = rect.width / 4;
+    var col = Math.floor(x / cellSize);
+    var row = Math.floor(y / cellSize);
+
+    if (col >= 0 && col < 4 && row >= 0 && row < 4) {
+      self.emit("setTile", {
+        position: { x: col, y: row },
+        value: self.selectedValue
+      });
+    }
+  });
 };
