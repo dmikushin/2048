@@ -48,11 +48,17 @@ h1.title {
     opacity: 0; } }
 .scores-container {
   float: right;
-  text-align: right; }
+  text-align: right;
+  display: flex;
+  flex-direction: column;
+  gap: 8px; }
+
+.scores-row {
+  display: flex;
+  gap: 10px; }
 
 .score-container, .best-container {
   position: relative;
-  display: inline-block;
   background: #bbada0;
   padding: 15px 25px;
   font-size: 25px;
@@ -61,8 +67,21 @@ h1.title {
   font-weight: bold;
   border-radius: 3px;
   color: white;
-  margin-top: 8px;
-  text-align: center; }
+  text-align: center;
+  flex: 1; }
+
+.buttons-container {
+  display: flex;
+  gap: 10px; }
+
+.button-column {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  flex: 1; }
+
+.button-column:last-child {
+  min-width: 0; }
   .score-container:after, .best-container:after {
     position: absolute;
     width: 100%;
@@ -517,25 +536,53 @@ hr {
   line-height: 42px;
   margin-bottom: 0; }
 
-.restart-button, .undo-button, .reset-setup-button {
-  display: inline-block;
+.restart-button, .undo-button, .setup-button {
+  display: block;
   background: #8f7a66;
+  border-radius: 3px;
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  color: #f9f6f2;
+  height: 40px;
+  text-align: center;
+  font-weight: bold;
+  cursor: pointer;
+  width: 100%;
+  box-sizing: border-box;
+  white-space: nowrap;
+  overflow: hidden; }
+
+.restart-button, .setup-button {
+  font-size: 18px;
+  line-height: 40px; }
+
+.undo-button {
+  background: #b8a195;
+  height: 88px;
+  font-size: 35px;
+  line-height: 88px; }
+
+@media screen and (max-width: 520px) {
+  .restart-button, .setup-button {
+    font-size: 12px; }
+
+  .undo-button {
+    font-size: 20px; }
+}
+
+.reset-setup-button {
+  display: inline-block;
+  background: #6daa4d;
   border-radius: 3px;
   padding: 0 20px;
   text-decoration: none;
   color: #f9f6f2;
   height: 40px;
   line-height: 42px;
-  display: block;
   text-align: center;
   float: right;
   margin-left: 10px; }
-
-.undo-button {
-  background: #b8a195; }
-
-.reset-setup-button {
-  background: #6daa4d; }
 
 .game-explanation {
   margin-top: 50px; }
@@ -858,24 +905,6 @@ hr {
   background: #7dba5d;
 }
 
-.setup-button {
-  display: inline-block;
-  background: #8f7a66;
-  border-radius: 3px;
-  padding: 0 20px;
-  color: #f9f6f2;
-  height: 40px;
-  line-height: 42px;
-  margin-left: 10px;
-  text-decoration: none;
-  cursor: pointer;
-  font-size: 14px;
-  font-weight: bold;
-}
-
-.setup-button:hover {
-  background: #9f8a76;
-}
 
 .game-container.setup-mode {
   cursor: pointer;

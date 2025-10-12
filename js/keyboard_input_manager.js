@@ -175,11 +175,11 @@ KeyboardInputManager.prototype.toggleSetup = function (event) {
   if (this.setupMode) {
     this.emit("enterSetup");
     document.querySelector(".setup-controls").style.display = "block";
-    document.querySelector(".setup-button").textContent = "Exit Setup";
+    document.querySelector(".setup-button").textContent = "Exit";
   } else {
     this.emit("exitSetup");
     document.querySelector(".setup-controls").style.display = "none";
-    document.querySelector(".setup-button").textContent = "Setup Mode";
+    document.querySelector(".setup-button").textContent = "Setup";
   }
 };
 
@@ -188,7 +188,7 @@ KeyboardInputManager.prototype.startGame = function (event) {
   this.setupMode = false;
   this.emit("exitSetup");
   document.querySelector(".setup-controls").style.display = "none";
-  document.querySelector(".setup-button").textContent = "Setup Mode";
+  document.querySelector(".setup-button").textContent = "Setup";
 };
 
 KeyboardInputManager.prototype.clearBoard = function (event) {
