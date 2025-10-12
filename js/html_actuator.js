@@ -70,7 +70,8 @@ HTMLActuator.prototype.addTile = function (tile, maxTileValue) {
   // We can't use classlist because it somehow glitches when replacing classes
   var classes = ["tile", "tile-" + tile.value, positionClass];
 
-  if (tile.value > 2048) classes.push("tile-super");
+  // Add tile-super only for tiles > 32768
+  if (tile.value > 32768) classes.push("tile-super");
 
   // Add glow effect to max tile if >= 2048
   if (maxTileValue >= 2048 && tile.value === maxTileValue) {
