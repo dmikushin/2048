@@ -14,10 +14,21 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
   window.requestAnimationFrame(function () {
     self.clearContainer(self.tileContainer);
 
+    // Find max tile value on grid
+    var maxTileValue = 0;
+    grid.cells.forEach(function (column) {
+      column.forEach(function (cell) {
+        if (cell && cell.value > maxTileValue) {
+          maxTileValue = cell.value;
+        }
+      });
+    });
+
+    // Add tiles with max tile highlighting
     grid.cells.forEach(function (column) {
       column.forEach(function (cell) {
         if (cell) {
-          self.addTile(cell);
+          self.addTile(cell, maxTileValue);
         }
       });
     });
@@ -48,7 +59,7 @@ HTMLActuator.prototype.clearContainer = function (container) {
   }
 };
 
-HTMLActuator.prototype.addTile = function (tile) {
+HTMLActuator.prototype.addTile = function (tile, maxTileValue) {
   var self = this;
 
   var wrapper   = document.createElement("div");
@@ -60,6 +71,11 @@ HTMLActuator.prototype.addTile = function (tile) {
   var classes = ["tile", "tile-" + tile.value, positionClass];
 
   if (tile.value > 2048) classes.push("tile-super");
+
+  // Add glow effect to max tile if >= 2048
+  if (maxTileValue >= 2048 && tile.value === maxTileValue) {
+    classes.push("tile-max-glow");
+  }
 
   this.applyClasses(wrapper, classes);
 
@@ -78,7 +94,7 @@ HTMLActuator.prototype.addTile = function (tile) {
 
     // Render the tiles that merged
     tile.mergedFrom.forEach(function (merged) {
-      self.addTile(merged);
+      self.addTile(merged, maxTileValue);
     });
   } else {
     classes.push("tile-new");
