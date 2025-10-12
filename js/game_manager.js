@@ -316,6 +316,7 @@ GameManager.prototype.positionsEqual = function (first, second) {
 // Enter setup mode
 GameManager.prototype.enterSetupMode = function () {
   this.setupMode = true;
+  this.actuator.continueGame(); // Clear game won/lost message
   this.actuator.enterSetupMode();
 };
 
@@ -385,6 +386,7 @@ GameManager.prototype.resetToSetup = function () {
   this.keepPlaying = false;
   this.maxTile = this.setupState.maxTile; // Restore max tile from setup
   this.stateHistory = []; // Clear history
+  this.actuator.continueGame(); // Clear game won/lost message
 
   this.actuate();
 };
