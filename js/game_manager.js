@@ -107,7 +107,8 @@ GameManager.prototype.actuate = function () {
     over:       this.over,
     won:        this.won,
     bestScore:  this.storageManager.getBestScore(),
-    terminated: this.isGameTerminated()
+    terminated: this.isGameTerminated(),
+    maxTile:    this.maxTile
   });
 
 };

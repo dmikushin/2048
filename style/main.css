@@ -15,12 +15,22 @@ body {
   display: block;
   clear: both; }
 
+.title-container {
+  float: left;
+  max-width: 200px; }
+
 h1.title {
   font-size: 80px;
   font-weight: bold;
   margin: 0;
-  display: block;
-  float: left; }
+  display: block; }
+
+.title-container .game-intro {
+  float: none;
+  margin: 0;
+  line-height: 1.5;
+  font-size: 16px;
+  word-wrap: break-word; }
 
 @-webkit-keyframes move-up {
   0% {
@@ -531,10 +541,6 @@ hr {
   display: block;
   clear: both; }
 
-.game-intro {
-  float: left;
-  line-height: 42px;
-  margin-bottom: 0; }
 
 .restart-button, .undo-button, .setup-button {
   display: block;

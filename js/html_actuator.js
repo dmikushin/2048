@@ -3,6 +3,7 @@ function HTMLActuator() {
   this.scoreContainer   = document.querySelector(".score-container");
   this.bestContainer    = document.querySelector(".best-container");
   this.messageContainer = document.querySelector(".game-message");
+  this.gameIntro        = document.querySelector(".game-intro");
 
   this.score = 0;
 }
@@ -23,6 +24,7 @@ HTMLActuator.prototype.actuate = function (grid, metadata) {
 
     self.updateScore(metadata.score);
     self.updateBestScore(metadata.bestScore);
+    self.updateGameIntro(metadata.maxTile);
 
     if (metadata.terminated) {
       if (metadata.over) {
@@ -122,6 +124,11 @@ HTMLActuator.prototype.updateScore = function (score) {
 
 HTMLActuator.prototype.updateBestScore = function (bestScore) {
   this.bestContainer.textContent = bestScore;
+};
+
+HTMLActuator.prototype.updateGameIntro = function (maxTile) {
+  var nextTile = maxTile >= 2048 ? maxTile * 2 : 2048;
+  this.gameIntro.innerHTML = 'Join the numbers and get to the <strong>' + nextTile + ' tile!</strong>';
 };
 
 HTMLActuator.prototype.message = function (won) {
